@@ -1,0 +1,172 @@
+openapi: 3.0.3
+info:
+  title: Book Store — User Registration API
+  version: "0.1.0"
+  description: >
+    Черновик REST API для экрана регистрации (кнопка Register).
+    Макет — `registration_ui_mockup.png`.
+
+servers:
+  - url: https://api.bookstore.example.com
+    description: Пример базового URL
+
+paths:
+  /api/v1/users/register:
+    post:
+      summary: Регистрация нового пользователя
+      operationId: registerUser
+      tags:
+        - Users
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+            examples:
+              valid:
+                summary: Пример запроса
+                value:
+                  firstName: Jane
+                  lastName: Reader
+                  username: jreader
+                  password: Secret1!
+                  recaptchaResponse: 03AGdBq27...
+      responses:
+        "201":
+          description: Пользователь создан
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegisterSuccess"
+              examples:
+                success:
+                  value:
+                    id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+                    username: jreader
+                    message: User registered successfully
+        "400":
+          description: Ошибка запроса, валидации или reCAPTCHA
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                password:
+                  value:
+                    error: VALIDATION_ERROR
+                    message: "Passwords must have at least one non alphanumeric character, one digit ('0'-'9'), one upper case ('A'-'Z')."
+                    details:
+                      - field: password
+                captcha:
+                  value:
+                    error: CAPTCHA_REQUIRED
+                    message: Please verify that you are not a robot!
+        "409":
+          description: Пользователь с таким username уже существует
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                exists:
+                  value:
+                    error: USER_EXISTS
+                    message: User exists!
+        "500":
+          description: Внутренняя ошибка сервера (БД, непредвиденное исключение)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                serverError:
+                  value:
+                    error: INTERNAL_ERROR
+                    message: An unexpected error occurred. Please try again later.
+        "502":
+          description: Ошибка при обращении к Google reCAPTCHA (сервис недоступен); тело — нейтральное сообщение, детали — в логах
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                captchaUnavailable:
+                  value:
+                    error: SERVICE_UNAVAILABLE
+                    message: Service temporarily unavailable. Please try again later.
+
+components:
+  schemas:
+    RegisterRequest:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - username
+        - password
+        - recaptchaResponse
+      properties:
+        firstName:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Имя (после trim непустое)
+        lastName:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Фамилия
+        username:
+          type: string
+          minLength: 3
+          maxLength: 50
+          description: Логин (правила символов — по политике продукта)
+        password:
+          type: string
+          format: password
+          description: Пароль; сложность проверяется на бэкенде
+        recaptchaResponse:
+          type: string
+          description: >
+            Токен, который фронт получает от виджета Google reCAPTCHA после
+            успешной отметки «I'm not a robot»
+
+    RegisterSuccess:
+      type: object
+      required:
+        - id
+        - username
+      properties:
+        id:
+          type: string
+          description: Идентификатор созданного пользователя (UUID или числовой — на усмотрение бэкенда)
+          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        username:
+          type: string
+        message:
+          type: string
+          example: User registered successfully
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          example: VALIDATION_ERROR
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+          description: Полевые ошибки валидации (опционально)

@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_Task2_Publication" targetNamespace="http://bpmn.io/schema/bpmn" exporter="bpmn-js (https://demo.bpmn.io)" exporterVersion="18.13.1">
+  <bpmn:collaboration id="Collaboration_Task2">
+    <bpmn:participant id="Participant_Task2" name="UC-1 Публикация товара на витрине" processRef="Process_Task2_Publication" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_Task2_Publication" name="Публикация товара на витрине" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_Task2">
+      <bpmn:lane id="Lane_System" name="Backend">
+        <bpmn:flowNodeRef>Task_LogHistoryAndResult</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_ConditionsOk</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_PublishAndCatalog</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_PublishResult</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_02wmdhm</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_0d9badk</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ValidateConditions</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Seller" name="Продавец - UI">
+        <bpmn:flowNodeRef>Start_Task2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_OpenCard</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ShowPublishButton</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_0ttedc3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ClickPublish</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_A2_ServiceError</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_0s9661u</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_1earkek</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Success</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_0wuwlm4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_07wnm8t</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_Task2" name="Начало">
+      <bpmn:outgoing>Flow_to_OpenCard</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="Task_OpenCard" name="Открыть товар в ЛК">
+      <bpmn:incoming>Flow_to_OpenCard</bpmn:incoming>
+      <bpmn:outgoing>Flow_to_ShowPublish</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Task_ShowPublishButton" name="Отобразить действие «Опубликовать»">
+      <bpmn:incoming>Flow_160iz9a</bpmn:incoming>
+      <bpmn:outgoing>Flow_to_ClickPublish</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_0ttedc3" name="Отобразить действие «Снять с публикации»">
+      <bpmn:incoming>Flow_0sp9ed0</bpmn:incoming>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_LogHistoryAndResult" name="Запись в историю операций">
+      <bpmn:incoming>Flow_02jimq0</bpmn:incoming>
+      <bpmn:outgoing>Flow_to_EndSuccess</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="Task_ClickPublish" name="Нажать «Опубликовать» и подтвердить">
+      <bpmn:incoming>Flow_to_ClickPublish</bpmn:incoming>
+      <bpmn:incoming>Flow_1r181wj</bpmn:incoming>
+      <bpmn:outgoing>Flow_to_Validate</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_ConditionsOk" name="Обязательные условия для публикации выполнены?">
+      <bpmn:incoming>Flow_1u0ne0m</bpmn:incoming>
+      <bpmn:outgoing>Flow_Conditions_No</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Conditions_Yes</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_PublishAndCatalog" name="Перевести в «опубликован»">
+      <bpmn:incoming>Flow_Conditions_Yes</bpmn:incoming>
+      <bpmn:outgoing>Flow_0irkyr6</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_PublishResult" name="Публикация завершилась успешно?">
+      <bpmn:incoming>Flow_0irkyr6</bpmn:incoming>
+      <bpmn:outgoing>Flow_Publish_Error</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Publish_Ok</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:parallelGateway id="Gateway_02wmdhm">
+      <bpmn:incoming>Flow_Publish_Ok</bpmn:incoming>
+      <bpmn:outgoing>Flow_02jimq0</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1g98zh1</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:exclusiveGateway id="Gateway_0d9badk" name="Товар опубликован?">
+      <bpmn:incoming>Flow_to_ShowPublish</bpmn:incoming>
+      <bpmn:outgoing>Flow_160iz9a</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0sp9ed0</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_ValidateConditions" name="Проверить обязательные условия публикации">
+      <bpmn:incoming>Flow_to_Validate</bpmn:incoming>
+      <bpmn:outgoing>Flow_1u0ne0m</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_A2_ServiceError" name="Сообщение об ошибке сервиса">
+      <bpmn:incoming>Flow_Publish_Error</bpmn:incoming>
+      <bpmn:outgoing>Flow_0593yuc</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="Event_0s9661u">
+      <bpmn:incoming>Flow_0593yuc</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:task id="Activity_1earkek" name="Отобразить успех операции">
+      <bpmn:incoming>Flow_1g98zh1</bpmn:incoming>
+      <bpmn:outgoing>Flow_1wtunm2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="End_Success" name="Товар опубликован на витрине">
+      <bpmn:incoming>Flow_to_EndSuccess</bpmn:incoming>
+      <bpmn:incoming>Flow_1wtunm2</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="Activity_0wuwlm4" name="Продавец дополняет карточку">
+      <bpmn:incoming>Flow_133fw8i</bpmn:incoming>
+      <bpmn:outgoing>Flow_1r181wj</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Activity_07wnm8t" name="Подсветить, какие условия не выполнены">
+      <bpmn:incoming>Flow_Conditions_No</bpmn:incoming>
+      <bpmn:outgoing>Flow_133fw8i</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_to_OpenCard" sourceRef="Start_Task2" targetRef="Task_OpenCard" />
+    <bpmn:sequenceFlow id="Flow_to_ShowPublish" sourceRef="Task_OpenCard" targetRef="Gateway_0d9badk" />
+    <bpmn:sequenceFlow id="Flow_160iz9a" name="нет" sourceRef="Gateway_0d9badk" targetRef="Task_ShowPublishButton" />
+    <bpmn:sequenceFlow id="Flow_to_ClickPublish" sourceRef="Task_ShowPublishButton" targetRef="Task_ClickPublish" />
+    <bpmn:sequenceFlow id="Flow_0sp9ed0" name="да" sourceRef="Gateway_0d9badk" targetRef="Activity_0ttedc3" />
+    <bpmn:sequenceFlow id="Flow_02jimq0" sourceRef="Gateway_02wmdhm" targetRef="Task_LogHistoryAndResult" />
+    <bpmn:sequenceFlow id="Flow_to_EndSuccess" sourceRef="Task_LogHistoryAndResult" targetRef="End_Success" />
+    <bpmn:sequenceFlow id="Flow_1r181wj" sourceRef="Activity_0wuwlm4" targetRef="Task_ClickPublish" />
+    <bpmn:sequenceFlow id="Flow_to_Validate" sourceRef="Task_ClickPublish" targetRef="Task_ValidateConditions" />
+    <bpmn:sequenceFlow id="Flow_1u0ne0m" sourceRef="Task_ValidateConditions" targetRef="Gateway_ConditionsOk" />
+    <bpmn:sequenceFlow id="Flow_Conditions_No" name="Нет" sourceRef="Gateway_ConditionsOk" targetRef="Activity_07wnm8t" />
+    <bpmn:sequenceFlow id="Flow_Conditions_Yes" name="Да" sourceRef="Gateway_ConditionsOk" targetRef="Task_PublishAndCatalog" />
+    <bpmn:sequenceFlow id="Flow_0irkyr6" sourceRef="Task_PublishAndCatalog" targetRef="Gateway_PublishResult" />
+    <bpmn:sequenceFlow id="Flow_Publish_Error" name="нет" sourceRef="Gateway_PublishResult" targetRef="Task_A2_ServiceError" />
+    <bpmn:sequenceFlow id="Flow_Publish_Ok" name="Да" sourceRef="Gateway_PublishResult" targetRef="Gateway_02wmdhm" />
+    <bpmn:sequenceFlow id="Flow_1g98zh1" sourceRef="Gateway_02wmdhm" targetRef="Activity_1earkek" />
+    <bpmn:sequenceFlow id="Flow_0593yuc" sourceRef="Task_A2_ServiceError" targetRef="Event_0s9661u" />
+    <bpmn:sequenceFlow id="Flow_1wtunm2" sourceRef="Activity_1earkek" targetRef="End_Success" />
+    <bpmn:sequenceFlow id="Flow_133fw8i" sourceRef="Activity_07wnm8t" targetRef="Activity_0wuwlm4" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Task2">
+    <bpmndi:BPMNPlane id="BPMNPlane_Task2" bpmnElement="Collaboration_Task2">
+      <bpmndi:BPMNShape id="BPMNShape_Participant_Task2" bpmnElement="Participant_Task2" isHorizontal="true">
+        <dc:Bounds x="160" y="80" width="1830" height="510" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_System_di" bpmnElement="Lane_System" isHorizontal="true">
+        <dc:Bounds x="190" y="300" width="1800" height="290" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Seller_di" bpmnElement="Lane_Seller" isHorizontal="true">
+        <dc:Bounds x="190" y="80" width="1800" height="220" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_Task2_di" bpmnElement="Start_Task2">
+        <dc:Bounds x="232" y="142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="229" y="185" width="39" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_OpenCard_di" bpmnElement="Task_OpenCard">
+        <dc:Bounds x="335" y="120" width="150" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ShowPublishButton_di" bpmnElement="Task_ShowPublishButton">
+        <dc:Bounds x="675" y="120" width="150" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1tjwqgp" bpmnElement="Activity_0ttedc3">
+        <dc:Bounds x="505" y="120" width="150" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_LogHistoryAndResult_di" bpmnElement="Task_LogHistoryAndResult">
+        <dc:Bounds x="1720" y="370" width="200" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ClickPublish_di" bpmnElement="Task_ClickPublish">
+        <dc:Bounds x="870" y="120" width="160" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_ConditionsOk_di" bpmnElement="Gateway_ConditionsOk" isMarkerVisible="true">
+        <dc:Bounds x="1115" y="385" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1161.5" y="383" width="75" height="53" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_PublishAndCatalog_di" bpmnElement="Task_PublishAndCatalog">
+        <dc:Bounds x="1180" y="480" width="220" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_PublishResult_di" bpmnElement="Gateway_PublishResult" isMarkerVisible="true">
+        <dc:Bounds x="1425" y="385" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1347" y="390" width="68" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_02wmdhm_di" bpmnElement="Gateway_02wmdhm">
+        <dc:Bounds x="1575" y="385" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0d9badk_di" bpmnElement="Gateway_0d9badk" isMarkerVisible="true">
+        <dc:Bounds x="455" y="385" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="454" y="436" width="72" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ValidateConditions_di" bpmnElement="Task_ValidateConditions">
+        <dc:Bounds x="860" y="370" width="180" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_A2_ServiceError_di" bpmnElement="Task_A2_ServiceError">
+        <dc:Bounds x="1350" y="170" width="200" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0s9661u_di" bpmnElement="Event_0s9661u">
+        <dc:Bounds x="1432" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1earkek_di" bpmnElement="Activity_1earkek">
+        <dc:Bounds x="1590" y="170" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Success_di" bpmnElement="End_Success">
+        <dc:Bounds x="1802" y="192" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1779" y="142" width="81" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0wuwlm4_di" bpmnElement="Activity_0wuwlm4">
+        <dc:Bounds x="1140" y="100" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_07wnm8t_di" bpmnElement="Activity_07wnm8t">
+        <dc:Bounds x="1140" y="210" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_to_OpenCard_di" bpmnElement="Flow_to_OpenCard">
+        <di:waypoint x="268" y="160" />
+        <di:waypoint x="335" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_ShowPublish_di" bpmnElement="Flow_to_ShowPublish">
+        <di:waypoint x="410" y="200" />
+        <di:waypoint x="410" y="410" />
+        <di:waypoint x="455" y="410" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_160iz9a_di" bpmnElement="Flow_160iz9a">
+        <di:waypoint x="505" y="410" />
+        <di:waypoint x="750" y="410" />
+        <di:waypoint x="750" y="200" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="732" y="348" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_ClickPublish_di" bpmnElement="Flow_to_ClickPublish">
+        <di:waypoint x="825" y="160" />
+        <di:waypoint x="870" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0sp9ed0_di" bpmnElement="Flow_0sp9ed0">
+        <di:waypoint x="480" y="385" />
+        <di:waypoint x="480" y="313" />
+        <di:waypoint x="580" y="313" />
+        <di:waypoint x="580" y="200" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="516" y="322" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_02jimq0_di" bpmnElement="Flow_02jimq0">
+        <di:waypoint x="1625" y="410" />
+        <di:waypoint x="1720" y="410" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_EndSuccess_di" bpmnElement="Flow_to_EndSuccess">
+        <di:waypoint x="1820" y="370" />
+        <di:waypoint x="1820" y="228" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1r181wj_di" bpmnElement="Flow_1r181wj">
+        <di:waypoint x="1140" y="140" />
+        <di:waypoint x="1085" y="140" />
+        <di:waypoint x="1085" y="160" />
+        <di:waypoint x="1030" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_to_Validate_di" bpmnElement="Flow_to_Validate">
+        <di:waypoint x="950" y="200" />
+        <di:waypoint x="950" y="370" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1u0ne0m_di" bpmnElement="Flow_1u0ne0m">
+        <di:waypoint x="1040" y="410" />
+        <di:waypoint x="1115" y="410" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Conditions_No_di" bpmnElement="Flow_Conditions_No">
+        <di:waypoint x="1140" y="385" />
+        <di:waypoint x="1140" y="338" />
+        <di:waypoint x="1180" y="338" />
+        <di:waypoint x="1180" y="290" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1160" y="316" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Conditions_Yes_di" bpmnElement="Flow_Conditions_Yes">
+        <di:waypoint x="1140" y="435" />
+        <di:waypoint x="1140" y="520" />
+        <di:waypoint x="1180" y="520" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1134" y="479" width="14" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0irkyr6_di" bpmnElement="Flow_0irkyr6">
+        <di:waypoint x="1400" y="520" />
+        <di:waypoint x="1450" y="520" />
+        <di:waypoint x="1450" y="435" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Publish_Error_di" bpmnElement="Flow_Publish_Error">
+        <di:waypoint x="1450" y="385" />
+        <di:waypoint x="1450" y="250" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1461" y="256" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Publish_Ok_di" bpmnElement="Flow_Publish_Ok">
+        <di:waypoint x="1475" y="410" />
+        <di:waypoint x="1575" y="410" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1518" y="392" width="14" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1g98zh1_di" bpmnElement="Flow_1g98zh1">
+        <di:waypoint x="1600" y="385" />
+        <di:waypoint x="1600" y="318" />
+        <di:waypoint x="1640" y="318" />
+        <di:waypoint x="1640" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0593yuc_di" bpmnElement="Flow_0593yuc">
+        <di:waypoint x="1450" y="170" />
+        <di:waypoint x="1450" y="138" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1wtunm2_di" bpmnElement="Flow_1wtunm2">
+        <di:waypoint x="1690" y="210" />
+        <di:waypoint x="1802" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_133fw8i_di" bpmnElement="Flow_133fw8i">
+        <di:waypoint x="1190" y="210" />
+        <di:waypoint x="1190" y="180" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
